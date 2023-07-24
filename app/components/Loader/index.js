@@ -1,19 +1,36 @@
 import React, { useEffect, useRef } from "react";
 import { words } from "./data";
+import { gsap } from "gsap";
+import { collapseWords, introAnimation, progressAnimation } from "./animations";
 
 import styles from "./Loader.module.scss";
 
-const Loader = () => {
+const Loader = ({ timeline }) => {
+  const loaderRef = useRef(null);
+  const progressRef = useRef(null);
+  const progressNumberRef = useRef(null);
+  const wordGroupsRef = useRef(null);
+
+  useEffect(() => {
+    timeline &&
+      timeline
+        .add(introAnimation(wordGroupsRef))
+        .add(progressAnimation(progressRef, progressNumberRef), 0)
+        .add(collapseWords(loaderRef), "-=1");
+  }, [timeline]);
+
   return (
     <div className={styles.loader__wrapper}>
       <div className={styles.loader__progressWrapper}>
-        <div className={styles.loader__progress}></div>
-        <span className={styles.loader__progressNumber}>0</span>
+        <div className={styles.loader__progress} ref={progressRef}></div>
+        <span className={styles.loader__progressNumber} ref={progressNumberRef}>
+          0
+        </span>
       </div>
-      <div className={styles.loader}>
+      <div className={styles.loader} ref={loaderRef}>
         <div className={styles.loader__words}>
           <div className={styles.loader__overlay}></div>
-          <div className={styles.loader__wordsGroup}>
+          <div className={styles.loader__wordsGroup} ref={wordGroupsRef}>
             {words.map((word, index) => {
               return (
                 <span key={index} className={styles.loader__word}>
